@@ -40,10 +40,10 @@ func handleMain(w http.ResponseWriter, r *http.Request) {
 func handleGitHubLogin(w http.ResponseWriter, r *http.Request) {
 	url := oauthConf.AuthCodeURL(oauthStateString, oauth2.AccessTypeOnline)
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
+}
 
 
-// callback handler
-// github_oauth_cb. Called by GH after Auth is granted
+// callback handler , github_oauth_cb. Called by GH after Auth is granted
 func handleGitHubCallback(w http.ResponseWriter, r *http.Request) {
 	state := r.FormValue("state")
 	if state != oauthStateString {
@@ -54,6 +54,7 @@ func handleGitHubCallback(w http.ResponseWriter, r *http.Request) {
 
 	code := r.FormValue("code")
 	token, err := oauthConf.Exchange(oauth2.NoContext, code)
+
 	if err != nil {
 		fmt.Printf("oauthConf.Exchange() failed with '%s'\n", err)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
@@ -63,11 +64,13 @@ func handleGitHubCallback(w http.ResponseWriter, r *http.Request) {
 	oauthClient := oauthConf.Client(oauth2.NoContext, token)
 	client := github.NewClient(oauthClient)
 	user, _, err := client.Users.Get("")
+
 	if err != nil {
 		fmt.Printf("client.Users.Get() faled with '%s'\n", err)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
+
 	fmt.Printf("Logged in as GitHub user: %s\n", *user.Login)
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }
