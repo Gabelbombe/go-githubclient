@@ -1,10 +1,14 @@
 package main
 
+
 import (
 	"fmt"
 	"net/http"
+
+	"stathat.com/c/jconfig"
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
+
 	githuboauth "golang.org/x/oauth2/github"
 )
 
@@ -12,9 +16,12 @@ var (
 	// You must register the app at https://github.com/settings/applications
 	// Set callback to http://127.0.0.1:7000/github_oauth_cb
 	// Set ClientId and ClientSecret to
+
+	conf = jconfig.LoadConfig("config/config.json")
+
 	oauthConf = &oauth2.Config{
-		ClientID:     "",
-		ClientSecret: "",
+		ClientID:     conf.GetString("ClientID"),
+		ClientSecret: conf.GetString("ClientSecret"),
 		Scopes:       []string{"user:email", "repo"},
 		Endpoint:     githuboauth.Endpoint,
 	}
@@ -26,7 +33,6 @@ const htmlIndex = `<html><body>
 Logged in with <a href="/login">GitHub</a>
 </body></html>
 `
-
 
 // main handler
 func handleMain(w http.ResponseWriter, r *http.Request) {
