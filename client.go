@@ -71,3 +71,12 @@ func handleGitHubCallback(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Logged in as GitHub user: %s\n", *user.Login)
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }
+
+
+func main() {
+	http.HandleFunc("/", handleMain)
+	http.HandleFunc("/login", handleGitHubLogin)
+	http.HandleFunc("/github_oauth_cb", handleGitHubCallback)
+	fmt.Print("Started running on http://127.0.0.1:7000\n")
+	fmt.Println(http.ListenAndServe(":7000", nil))
+}
